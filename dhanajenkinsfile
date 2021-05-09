@@ -1,5 +1,5 @@
 pipeline {
-    enviroment {
+    environment {
         DOCKER_LOGIN= credentials('docker_login')
     }
     agent {
