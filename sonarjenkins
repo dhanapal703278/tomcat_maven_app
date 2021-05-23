@@ -15,7 +15,7 @@ pipeline {
          stage('build code coverage'){
              agent {
                  docker {
-                     image: 'sonarqube:latest'
+                     image 'sonarqube:latest'
                      label 'dockernode'
                  }
              }
