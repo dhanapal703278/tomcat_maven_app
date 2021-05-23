@@ -1,0 +1,31 @@
+pipeline {
+     agent none
+     stages {
+         stage('checkout') {
+             steps {
+                 git 'https://github.com/dhanapal703278/tomcat_maven_app.git'
+             }
+         }
+         stage('Build') {
+             agent any
+             steps {
+                 sh "maven clean install"
+             }
+         }
+         stage('build code coverage'){
+             agent {
+                 docker {
+                     image: 'sonarqube:latest'
+                     label 'dockernode'
+                 }
+             }
+             steps {
+                 withSonarQubeEnv('My SonarQube Server') {
+                     sh 'mvn clean package sonar:sonar'
+                 }
+
+             }
+         }
+         
+     }
+ }
