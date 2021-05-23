@@ -1,7 +1,8 @@
 pipeline {
      agent none
      stages {
-         stage('checkout') {
+         stage('checkout') { 
+             agent any
              steps {
                  git 'https://github.com/dhanapal703278/tomcat_maven_app.git'
              }
