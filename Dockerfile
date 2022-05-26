@@ -1,3 +1,4 @@
+####final tomcat application
 FROM tomcat
 RUN rm -rf /usr/local/tomcat/webapps/ROOT/
 COPY java-tomcat-maven-example.war /usr/local/tomcat/webapps/ROOT/ 
