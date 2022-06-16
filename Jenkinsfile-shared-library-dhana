@@ -1,3 +1,3 @@
 @Library('my-shared-library') _
-//jenkinsforjava repoUrl(varible_name) repoUrl varible given the shared library repository
+//jenkinsforjava repoUrl(varible_name) repoUrl varible given the shared library repository { this string def call(String repoUrl)}
 jenkinsfordocker 'https://github.com/dhanapal703278/tomcat_maven_app_source_code_dhana.git'
