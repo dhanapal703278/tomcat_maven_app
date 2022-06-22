@@ -2,15 +2,65 @@ pipeline{
     agent none
 
     environment{
-        SONARQUBE_URL = 'http://138f85f2.ngrok.io'
-        SONARQUBE_LOGIN = credentials('sonar-login')
-        VM_USER = "ec2-user"
-        VM_SERVER = "172.31.85.9"
+        //SONARQUBE_URL = 'http://138f85f2.ngrok.io'
+        //SONARQUBE_LOGIN = credentials('sonar-login')
+        //VM_USER = "ec2-user"
+        //VM_SERVER = "172.31.85.9"
         TAG = "lokeshkamalay/tomcat"
         PORT = 8080
 
     }
-    parameters {
+    parameters {stage('To Image'){
+76
+                    agent{ label 'dockernode'}
+77
+                    steps{
+78
+                        script{
+79
+                            unstash 'artifact'
+80
+                            docker.withRegistry('','docker-hub') {
+81
+                            customImage = docker.build("${TAG}:${env.BUILD_ID}")
+82
+                            customImage.push()
+83
+                            }
+84
+                        }
+85
+                    }
+86
+                }
+87
+            }
+88
+        }
+89
+        stage('Deploying To Docker Environment'){
+90
+            when {
+91
+                beforeAgent true
+92
+                expression { params.DeployDocker == 'Yes'}
+93
+            }
+94
+            agent{ label 'dockernode'}
+95
+            steps{
+96
+                sh """
+97
+                    docker run -d -p $PORT:8080 $TAG:$BUILD_ID
+98
+                """
+99
+            }
+100
+        }
         choice(choices: 'Yes\nNo', description: 'Pls choose the environment to deploy', name: 'Deploy')
         choice(choices: 'Yes\nNo', description: 'Deploy to Docker', name: 'DeployDocker')
     }
