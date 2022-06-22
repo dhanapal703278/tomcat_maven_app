@@ -43,14 +43,14 @@
   </build>
   <distributionManagement>
     <repository>
-        <id>artifactory-releases</id>
-        <name>maven</name>
-        <url>http://136f84f1.ngrok.io/artifactory/releases</url>
+        <id>central</id>
+        <name>dhana-releases</name>
+        <url>http://localhost:8081/artifactory/central</url>
     </repository>
     <snapshotRepository>
-        <id>artifactory-snapshots</id>
-        <name>artifactory</name>
-        <url>http://136f84f1.ngrok.io/artifactory/snapshots</url>
+        <id>snapshots</id>
+        <name>dhana-snapshots</name>
+        <url>http://localhost:8081/artifactory/central</url>
     </snapshotRepository>
-</distributionManagement>  
+</distributionManagement>
 </project>
