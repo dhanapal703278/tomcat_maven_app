@@ -18,14 +18,9 @@ pipeline{
     // options{}
     stages{
         stage('Junit and Sonar'){
-            agent {
-                docker {
-                    image 'maven:3-jdk-8'
-                    label 'dockernode'
-                }
-            }
+            
             steps {
-                sh 'mvn --settings settings.xml test verify surefire-report:report-only sonar:sonar -Dsonar.host.url=$SONARQUBE_URL -Dsonar.login=$SONARQUBE_LOGIN'
+                sh 'mvn --settings settings.xml test verify surefire-report:report-only '
             }
             post {
                 success {
@@ -37,12 +32,7 @@ pipeline{
         }
 
         stage('Build'){
-            agent {
-                dockerfile {
-                    filename 'Dockerfile-project'
-                    label 'dockernode'
-                }
-            }
+            
             stages{
                 stage('Read the POM'){
                     steps{
@@ -66,7 +56,7 @@ pipeline{
                 }
             }
         }
-        stage('Deployment'){
+        /*stage('Deployment'){
             when {
                 beforeAgent true
                 expression { params.Deploy == 'Yes'}
@@ -81,7 +71,7 @@ pipeline{
                             sh "ssh -o StrictHostKeyChecking=no ${this.VM_USER}@${this.VM_SERVER} 'cp -r /usr/share/tomcat/webapps/ROOT/ /usr/share/tomcat/webapps/ROOT_Backup/; rm -rf /usr/share/tomcat/webapps/ROOT/; unzip /tmp/*.war -d /usr/share/tomcat/webapps/ROOT; rm -rf /tmp/*.war'"
                         }
                     }
-                }
+                }*/
                 stage('To Image'){
                     agent{ label 'dockernode'}
                     steps{
