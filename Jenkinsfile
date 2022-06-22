@@ -72,31 +72,6 @@ pipeline{
                         }
                     }
                 }*/
-                stage('To Image'){
-                    agent{ label 'dockernode'}
-                    steps{
-                        script{
-                            unstash 'artifact'
-                            docker.withRegistry('','docker-hub') {
-                            customImage = docker.build("${TAG}:${env.BUILD_ID}")
-                            customImage.push()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        stage('Deploying To Docker Environment'){
-            when {
-                beforeAgent true
-                expression { params.DeployDocker == 'Yes'}
-            }
-            agent{ label 'dockernode'}
-            steps{
-                sh """
-                    docker run -d -p $PORT:8080 $TAG:$BUILD_ID
-                """
-            }
-        }
+                
     }
 }
