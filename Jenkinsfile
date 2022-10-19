@@ -24,7 +24,7 @@ pipeline{
         stage('Test Maven - JUnit and Jacoco') {
             steps {
               sh "mvn test"
-        
+               jacoco()
             }
             
         }
