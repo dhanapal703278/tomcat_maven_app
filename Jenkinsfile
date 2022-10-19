@@ -1,30 +1,47 @@
-node('docker'){
-    def nginx_repo = "lokeshkamalay/nginx:latest"
-    def tomcat_repo = "lokeshkamalay/tomcat"
-
-    stage ('checkout'){
-	checkout scm
-    }
-    
-    stage('Build'){
-        docker.image('maven:latest').inside(){
-            sh "mvn clean package"
+pipeline{
+    agent  any
+    tools {
+            maven 'maven-3.8.6'
         }
+    options {
+        //discardbuilds 
+        buildDiscarder logRotator(artifactDaysToKeepStr: '30', artifactNumToKeepStr: '10', daysToKeepStr: '5', numToKeepStr: '5')
+        
     }
-    
-    stage('Prepare the Image'){
-        docker.withRegistry('','docker-hub') {
-        def customImage = docker.build("$tomcat_repo:${env.BUILD_ID}")
-        customImage.push()
+    stages{
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
+        
+        stage('Build') {
+            steps {
+                sh "mvn --version"
+                sh "mvn  install -DskipTests" //DskipTests-it skip tests in this stage
+            }
+        }
+        stage('Test Maven - JUnit and Jacoco') {
+            steps {
+              sh "mvn test"
+              jacoco()
+            }
+            
+        }
+        stage('Sonarqube Analysis - SAST') {
+            steps {
+                  withSonarQubeEnv('SonarQube') {
+           sh "mvn sonar:sonar \
+                              -Dsonar.projectKey=maven-jenkins-pipeline \
+                        -Dsonar.host.url=http://13.126.108.209:9000" 
+                }
+           timeout(time: 2, unit: 'MINUTES') {
+                      script {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+              }
+        }
+        
     }
-    
-    stage('Deploy'){
-        sh """
-            docker run -d -p 8081:8080 $tomcat_repo:$BUILD_ID
-            docker run -d -p 8082:8080 $tomcat_repo:$BUILD_ID
-            docker run -d -p 8080:80 $nginx_repo
-        """
-    }
-
 }
