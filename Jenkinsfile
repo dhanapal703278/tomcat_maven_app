@@ -28,19 +28,11 @@ pipeline{
             }
             
         }
-        stage('Sonarqube Analysis - SAST') {
+        stage('upload artifcat to s3') {
             steps {
-                  withSonarQubeEnv('SonarQube') {
-           sh "mvn sonar:sonar \
-                              -Dsonar.projectKey=maven-jenkins-pipeline \
-                        -Dsonar.host.url=http://13.126.108.209:9000" 
-                }
-           timeout(time: 2, unit: 'MINUTES') {
-                      script {
-                        waitForQualityGate abortPipeline: true
-                    }
-                }
-              }
+                s3Upload consoleLogLevel: 'INFO', dontSetBuildResultOnFailure: false, dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'myartifact-store', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: true, selectedRegion: 'ap-south-1', showDirectlyInBrowser: true, sourceFile: '**/*.war', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'S3-Artifactupload', userMetadata: []
+            }
+            
         }
         
     }
